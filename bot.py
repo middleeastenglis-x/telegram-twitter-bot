@@ -39,10 +39,8 @@ CONSUMER_KEY = "TXhmAs92dypvAVE9Qtxpzcc00"
 CONSUMER_SECRET = "gm8uxcKtXpYo6hmQkyW5NTMs00khKIw4E UToSJdvAraJYciTdP"
 
 ACCESS_TOKEN = "2101239653470973952-KfS9LGmHvhv2e
-
 AXNjIzvH75Kd7X1zi"
 ACCESS_TOKEN_SECRET = "PTIIv4AJHc3vnvgU7KTKUt2ZPBYC55BEG
-
 xVxNfXMZzDVz"
 
 
@@ -167,5 +165,3 @@ if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
