@@ -5,7 +5,7 @@ from telethon import TelegramClient, events
 import tweepy
 
 # ==========================================
-# FLASK SERVER
+# FLASK
 # ==========================================
 
 app = Flask(__name__)
@@ -18,14 +18,9 @@ def home():
 # ==========================================
 # TELEGRAM SETTINGS
 # ==========================================
-# ==========================================
-# TELEGRAM SETTINGS
-# ==========================================
 
-api_id = 137007922
-api_hash = "06daa70876742419f268ffaadc42a25"
-
-
+api_id = 37007922
+api_hash = "06daa70876742419f268ffaadc42a251"
 
 # আপনার Source Telegram Channel
 CHANNEL_USERNAME = os.environ.get(
@@ -33,30 +28,22 @@ CHANNEL_USERNAME = os.environ.get(
     "@MiddleEastEnglis"
 )
 
-# Telethon session file
-SESSION_NAME = os.environ.get(
-    "SESSION_NAME",
-    "session_name"
-)
+SESSION_NAME = "bot_session"
 
 
 # ==========================================
-# X / TWITTER SETTINGS
+# X / TWITTER INFORMATION
 # ==========================================
 
-consumer_key =G364SBW0l5n0kSdGf3omZawf7 os.environ["TW_CONSUMER_KEY"]
-consumer_secret =nNGU6u3nraU95ZBepck0krhIl5xCJy3EkEGSIsu35hhJWdWZUq os.environ["TW_CONSUMER_SECRET"]
-access_token =2101239653470973952-YEJ0qfHXMFFW5gEcVaaJ5Qa5vWTz1v os.environ["TW_ACCESS_TOKEN"]
-access_token_secret =pE2nfVxtJBdZlV8QkIn1hO5vRHHce5pGLUMmlTYgptliC os.environ["TW_ACCESS_TOKEN_SECRET"]
+CONSUMER_KEY = "TXhmAs92dypvAVE9Qtxpzcc00"
+CONSUMER_SECRET = "gm8uxcKtXpYo6hmQkyW5NTMs00khKIw4E UToSJdvAraJYciTdP"
 
+ACCESS_TOKEN = "2101239653470973952-KfS9LGmHvhv2e
 
-# X/Twitter client
-twitter_client = tweepy.Client(
-    consumer_key=consumer_key,
-    consumer_secret=consumer_secret,
-    access_token=access_token,
-    access_token_secret=access_token_secret
-)
+AXNjIzvH75Kd7X1zi"
+ACCESS_TOKEN_SECRET = "PTIIv4AJHc3vnvgU7KTKUt2ZPBYC55BEG
+
+xVxNfXMZzDVz"
 
 
 # ==========================================
@@ -71,48 +58,40 @@ client = TelegramClient(
 
 
 # ==========================================
-# AUTO HASHTAGS
+# X / TWITTER CLIENT
+# ==========================================
+
+twitter_client = tweepy.Client(
+    consumer_key=CONSUMER_KEY,
+    consumer_secret=CONSUMER_SECRET,
+    access_token=ACCESS_TOKEN,
+    access_token_secret=ACCESS_TOKEN_SECRET
+)
+
+
+# ==========================================
+# HASHTAGS
 # ==========================================
 
 def generate_tags(text):
-
     text_lower = text.lower()
-
-    tags = [
-        "#MiddleEast",
-        "#News"
-    ]
+    tags = ["#MiddleEast", "#News"]
 
     if any(word in text_lower for word in [
-        "war",
-        "conflict",
-        "attack",
-        "military",
-        "army",
-        "fighting",
-        "strike",
-        "missile"
+        "war", "conflict", "attack", "military",
+        "army", "fighting", "strike", "missile"
     ]):
         tags.append("#MiddleEastConflict")
 
     if any(word in text_lower for word in [
-        "economy",
-        "oil",
-        "gas",
-        "market",
-        "trade",
-        "dollar"
+        "economy", "oil", "gas", "market",
+        "trade", "dollar"
     ]):
         tags.append("#Economy")
 
     if any(word in text_lower for word in [
-        "palestine",
-        "gaza",
-        "israel",
-        "lebanon",
-        "iran",
-        "dubai",
-        "saudi"
+        "palestine", "gaza", "israel", "lebanon",
+        "iran", "dubai", "saudi"
     ]):
         tags.append("#BreakingNews")
 
@@ -120,129 +99,73 @@ def generate_tags(text):
 
 
 # ==========================================
-# TELEGRAM NEW MESSAGE
+# NEW TELEGRAM NEWS LISTENER
 # ==========================================
 
 @client.on(events.NewMessage(chats=CHANNEL_USERNAME))
-async def my_event_handler(event):
-
-    print("=" * 50)
+async def news_handler(event):
+    print("====================================")
     print("NEW TELEGRAM NEWS RECEIVED")
-    print("=" * 50)
+    print("====================================")
 
     news_text = event.raw_text.strip()
 
-    print("News:")
-    print(news_text[:500])
-
     if not news_text:
-        print("No text found. Skipping.")
+        print("No text. Skipping.")
         return
 
     try:
+        tags = generate_tags(news_text)
+        telegram_link = "https://t.me/+9bvReXpQo_szMGM1"
 
-        # Generate hashtags
-        auto_tags = generate_tags(news_text)
-
-        # Telegram channel link
-        telegram_link = os.environ.get(
-            "TELEGRAM_LINK",
-            "https://t.me/+9bvReXpQo_szMGM1"
-        )
-
-        subscribe_text = (
-            f"\n\n{auto_tags}"
+        extra_text = (
+            f"\n\n{tags}"
             f"\n\nSubscribe for more updates:"
             f"\n{telegram_link}"
         )
 
-        # X limit
-        allowed_news_length = 280 - len(subscribe_text)
-
-        if allowed_news_length < 1:
-            print("Error: Tags/link are too long.")
-            return
+        # X maximum 280 characters limit
+        allowed_length = 280 - len(extra_text)
 
         final_tweet = (
-            news_text[:allowed_news_length].rstrip()
-            + subscribe_text
+            news_text[:allowed_length].rstrip()
+            + extra_text
         )
 
-        print("=" * 50)
-        print("POSTING TO X/TWITTER")
-        print("=" * 50)
-        print(final_tweet)
-
-        # Post tweet
-        response = twitter_client.create_tweet(
-            text=final_tweet
-        )
-
-        print("SUCCESS!")
-        print("Tweet ID:", response.data["id"])
+        print("Posting to X...")
+        result = twitter_client.create_tweet(text=final_tweet)
+        print("SUCCESS! Tweet ID:", result.data["id"])
 
     except Exception as e:
-
-        print("=" * 50)
-        print("ERROR POSTING TO X/TWITTER")
-        print("=" * 50)
-        print(type(e).__name__)
-        print(str(e))
+        print("X/TWITTER ERROR:", str(e))
 
 
 # ==========================================
-# TELEGRAM BOT
+# TELEGRAM RUNNER
 # ==========================================
 
-def run_telegram_bot():
-
+def run_telegram():
     try:
-
-        print("=" * 50)
-        print("STARTING TELEGRAM CLIENT")
-        print("=" * 50)
-
+        print("Starting Telegram...")
         client.start()
-
-        print("Telegram client started successfully.")
-        print("Listening to:", CHANNEL_USERNAME)
-
+        print("Telegram connected! Watching:", CHANNEL_USERNAME)
         client.run_until_disconnected()
-
     except Exception as e:
-
-        print("=" * 50)
-        print("TELEGRAM ERROR")
-        print("=" * 50)
-        print(type(e).__name__)
-        print(str(e))
+        print("TELEGRAM ERROR:", str(e))
 
 
 # ==========================================
-# MAIN
+# START APP & BOT
 # ==========================================
 
 if __name__ == "__main__":
-
-    # Start Telegram in background
     telegram_thread = threading.Thread(
-        target=run_telegram_bot,
+        target=run_telegram,
         daemon=True
     )
-
     telegram_thread.start()
 
-    # Render port
-    port = int(
-        os.environ.get("PORT", 5000)
-    )
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 
-    print("=" * 50)
-    print("FLASK SERVER STARTING")
-    print("PORT:", port)
-    print("=" * 50)
 
-    app.run(
-        host="0.0.0.0",
-        port=port
-    )
