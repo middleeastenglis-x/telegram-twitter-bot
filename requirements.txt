@@ -1,4 +1,4 @@
 telethon
-gunicorn
-flask
 tweepy
+flask
+gunicorn
