@@ -29,6 +29,7 @@ CHANNEL_USERNAME = os.environ.get(
 )
 
 SESSION_NAME = "bot_session"
+BOT_TOKEN = "8612484727:AAFDHqqfKjVAP06GL6kERBX_L3CS9VkVePc"
 
 
 # ==========================================
